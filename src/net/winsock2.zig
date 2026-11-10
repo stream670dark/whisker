@@ -105,7 +105,7 @@ pub const AddrInfo = extern struct {
         UnknownError,
     };
 
-    pub fn get(node_name: ?[*:0]const u8, service_name: ?[*:0]const u8, hints: ?*const @This()) Error!*@This() {
+    pub fn get(node_name: [*:0]const u8, service_name: ?[*:0]const u8, hints: ?*const @This()) Error!*@This() {
         var result: ?*@This() = null;
         const err_code = c.getaddrinfo(node_name, service_name, hints, &result);
         return switch (err_code) {

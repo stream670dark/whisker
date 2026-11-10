@@ -1,10 +1,12 @@
 const std = @import("std");
 const ws2 = @import("net/winsock2.zig");
 
+pub const http = @import("http.zig");
+
 pub const RecvFlags = ws2.Socket.RecvFlags;
 
 pub const ListenOptions = struct {
-    bind: ?[:0]const u8 = null,
+    bind: [:0]const u8 = "127.0.0.1",
     port: u16 = 0,
     backlog: u31 = 128,
 };
@@ -29,7 +31,7 @@ pub const Server = struct {
             .protocol = .tcp,
         };
 
-        const address = try ws2.AddrInfo.get(options.bind, port_str, &hints);
+        const address = try ws2.AddrInfo.get(options.bind.ptr, port_str.ptr, &hints);
         defer address.free();
 
         var server_socket = try ws2.Socket.create(address);
