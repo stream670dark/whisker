@@ -18,7 +18,6 @@ Then, in your `build.zig`:
 ```zig
 const whisker = b.dependency("whisker", .{
     .target = target,
-    .optimize = optimize,
 });
 exe.root_module.addImport("whisker", whisker.module("whisker"));
 ```
@@ -35,13 +34,26 @@ pub fn main() !void {
     defer server.close();
 
     while (true) {
-        var client = try server.accept();
+        var client = server.accept() catch continue;
         defer client.close();
 
-        try wk.http.respond(&client, .{
+        wk.http.respond(&client, .{
             .content_type = .html,
             .body = page,
-        });
+        }) catch {};
     }
 }
 ```
+
+By default the server listens on `127.0.0.1`, so it is only reachable from
+your own machine. To accept connections from the network, bind explicitly:
+
+```zig
+var server = try wk.Server.listen(.{ .bind = "0.0.0.0", .port = 8080 });
+```
+
+`bind` expects an IP address, not a hostname.
+
+## License
+
+See [LICENSE](LICENSE).
